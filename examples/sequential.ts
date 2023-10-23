@@ -12,11 +12,11 @@ const wait = async (name: string) => {
 };
 
 const all = Promise.all([
-  queue.append('One', wait),
-  queue.append('Two', wait),
-  queue.append('Three', wait),
-  queue.append('Four', wait),
-  queue.append('Five', wait)
+  queue.add('One', wait),
+  queue.add('Four', wait),
+  queue.add('Five', wait),
+  queue.prepend('Three', wait),
+  queue.prepend('Two', wait)
 ]);
 
 console.log(`Queued ${queue.length} items (${queue.concurrency} concurrent)`);

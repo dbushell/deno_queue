@@ -93,13 +93,8 @@ export class Queue<T, R> {
     this.#queue = new Map(queue);
   }
 
-  /**
-   * Add an item to the queue
-   * @param item - Unique key or object to queue
-   * @param callback - Function to execute when item is active
-   * @returns A deferred promise that resolves the callback function
-   */
-  append(item: T, callback: QueueCallback<T, R>): Promise<R> {
+  /** Add an item to the queue */
+  add(item: T, callback: QueueCallback<T, R>, prepend = false): Promise<R> {
     // Return existing deferred promise
     const queued = this.get(item);
     if (queued) return queued;
@@ -109,8 +104,22 @@ export class Queue<T, R> {
       defer,
       callback
     });
+    if (prepend && this.size > 1) {
+      const queue = Array.from(this.#queue.entries());
+      this.#queue = new Map([queue.pop()!, ...queue]);
+    }
     this.#next();
     return defer;
+  }
+
+  /** Add an item to the end of the queue */
+  append(item: T, callback: QueueCallback<T, R>): Promise<R> {
+    return this.add(item, callback);
+  }
+
+  /** Add an item to the start of the queue */
+  prepend(item: T, callback: QueueCallback<T, R>): Promise<R> {
+    return this.add(item, callback, true);
   }
 
   #next(): void {
