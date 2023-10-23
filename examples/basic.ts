@@ -1,28 +1,23 @@
 import {Queue} from '../mod.ts';
 
-const queue = new Queue<string, number>({
+const queue = new Queue({
   concurrency: 1
 });
 
-const wait = async (name: string) => {
-  const ms = Math.floor(Math.random() * 1000);
-  await new Promise((resolve) => setTimeout(resolve, ms));
-  console.log(`Item "${name}" waited ${ms}ms`);
-  return ms;
-};
+// Append an async function
+queue.append('task one', async (name) => {
+  console.log(`${name} complete`);
+});
 
-const all = Promise.all([
-  queue.append('One', wait),
-  queue.append('Two', wait),
-  queue.append('Three', wait),
-  queue.append('Four', wait),
-  queue.append('Five', wait)
-]);
+// Append a promise-returning function
+queue
+  .append('task two', (name) => {
+    return Promise.resolve(`${name} complete`);
+  })
+  .then((message) => console.log(message));
 
-console.log(`Queued ${queue.length} items (${queue.concurrency} concurrent)`);
-
-const start = Date.now();
-
-await all;
-
-console.log(`Total time: ${Date.now() - start}ms`);
+// Append an object
+queue.append({wait: 1000}, async (item) => {
+  await new Promise((resolve) => setTimeout(resolve, item.wait));
+  console.log('task three complete');
+});
