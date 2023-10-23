@@ -5,6 +5,8 @@ export {Deferred};
 export interface QueueOptions {
   /** Maximum number of active items running at once */
   concurrency?: number;
+  /** Minimum number of milliseconds between start of each item */
+  throttle?: number;
 }
 
 export interface QueueCallback<T, R> {

@@ -1,20 +1,49 @@
-import {deferred} from 'https://deno.land/std@0.204.0/async/mod.ts';
+import {delay, deferred} from 'https://deno.land/std@0.204.0/async/mod.ts';
 import type {QueueItem, QueueOptions, QueueCallback} from './types.ts';
 
 export class Queue<T, R> {
-  #concurrency: number;
-  #pending: Map<T, QueueItem<T, R>>;
-  #queue: Map<T, QueueItem<T, R>>;
+  #pending: Map<T, QueueItem<T, R>> = new Map();
+  #queue: Map<T, QueueItem<T, R>> = new Map();
+  #concurrency!: number;
+  #throttle!: number;
+  #throttleId = 0;
+  #throttleLast = 0;
+  #throttleQueue: Queue<number, void> | undefined;
 
   constructor(options?: QueueOptions) {
-    this.#concurrency = Math.max(options?.concurrency ?? 1, 1);
-    this.#pending = new Map();
-    this.#queue = new Map();
+    this.concurrency = options?.concurrency ?? 1;
+    this.throttle = options?.throttle ?? 0;
+    // Use internal queue to apply throttle
+    if (this.throttle && this.concurrency > 1) {
+      this.#throttleQueue = new Queue({
+        throttle: this.throttle,
+        concurrency: 1
+      });
+      this.#throttle = 0;
+    }
   }
 
-  /** Maximum number of active items */
   get concurrency(): number {
     return this.#concurrency;
+  }
+
+  set concurrency(value: number) {
+    this.#concurrency = Math.max(value, 1);
+  }
+
+  get throttle(): number {
+    if (this.#throttleQueue) {
+      return this.#throttleQueue.throttle;
+    }
+    return this.#throttle;
+  }
+
+  set throttle(value: number) {
+    if (this.#throttleQueue) {
+      this.#throttleQueue.throttle = value;
+      return;
+    }
+    this.#throttle = Math.max(value, 0);
   }
 
   /** Number of active items running now */
@@ -94,10 +123,29 @@ export class Queue<T, R> {
       return;
     }
     const next = this.#queue.entries().next().value;
-    const [item, {defer, callback}]: [T, QueueItem<T, R>] = next;
+    const [item, queueItem]: [T, QueueItem<T, R>] = next;
     // Move item from queue to active
     this.#queue.delete(item);
-    this.#pending.set(item, {defer, callback});
+    this.#pending.set(item, queueItem);
+    // Throttle or run immediately
+    const run = () => this.#run(item, queueItem);
+    if (this.#throttleQueue) {
+      this.#throttleQueue.append(this.#throttleId++, run);
+    } else {
+      run();
+    }
+    this.#next();
+  }
+
+  async #run(item: T, {defer, callback}: QueueItem<T, R>): Promise<void> {
+    // Apply rate limit throttle
+    if (this.throttle) {
+      const elapsed = Date.now() - this.#throttleLast;
+      if (elapsed < this.throttle) {
+        await delay(this.throttle - elapsed);
+      }
+    }
+    this.#throttleLast = Date.now();
     // Execute item callback
     callback(item)
       .then(defer.resolve)
@@ -107,6 +155,5 @@ export class Queue<T, R> {
         this.#pending.delete(item);
         this.#next();
       });
-    this.#next();
   }
 }
