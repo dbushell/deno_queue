@@ -1,0 +1,11 @@
+/*
+!.gitignore
+!LICENSE
+!README.md
+!mod.ts
+!src
+src/*
+!src/*.ts
+!examples
+examples/*
+!examples/*.ts
