@@ -14,9 +14,9 @@ export class Queue<T, R> {
     this.concurrency = options?.concurrency ?? 1;
     this.throttle = options?.throttle ?? 0;
     // Use internal queue to apply throttle
-    if (this.throttle && this.concurrency > 1) {
+    if (this.#throttle && this.#concurrency > 1) {
       this.#throttleQueue = new Queue({
-        throttle: this.throttle,
+        throttle: this.#throttle,
         concurrency: 1
       });
       this.#throttle = 0;
@@ -119,7 +119,7 @@ export class Queue<T, R> {
       return;
     }
     // Limit concurrency active items
-    if (this.pending >= this.concurrency) {
+    if (this.pending >= this.#concurrency) {
       return;
     }
     const next = this.#queue.entries().next().value;
@@ -139,13 +139,13 @@ export class Queue<T, R> {
 
   async #run(item: T, {defer, callback}: QueueItem<T, R>): Promise<void> {
     // Apply rate limit throttle
-    if (this.throttle) {
+    if (this.#throttle) {
       const elapsed = Date.now() - this.#throttleLast;
-      if (elapsed < this.throttle) {
-        await delay(this.throttle - elapsed);
+      if (elapsed < this.#throttle) {
+        await delay(this.#throttle - elapsed);
       }
+      this.#throttleLast = Date.now();
     }
-    this.#throttleLast = Date.now();
     // Execute item callback
     callback(item)
       .then(defer.resolve)
