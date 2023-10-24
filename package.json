@@ -1,6 +1,6 @@
 {
   "name": "carriageway",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dbushell/carriageway.git"
@@ -10,13 +10,6 @@
   "type": "module",
   "main": "index.min.js",
   "types": "index.min.d.ts",
-  "exports": {
-    ".": {
-      "import": "./index.min.js",
-      "types": "./index.min.d.ts"
-    },
-    "./package.json": "./package.json"
-  },
   "files": [
     "index.min.js",
     "index.min.d.ts"
