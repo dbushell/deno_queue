@@ -1,23 +1,19 @@
 # 🦥 Deno Queue
 
-Run async / promise-returning functions with limited concurrency.
+Run async functions with limited concurrency and optional rate limiting.
 
 ## Usage
 
 Create a new queue:
 
 ```javascript
-const queue = new Queue({
-  concurrency: 1
-});
-
+const queue = new Queue();
 ```
 
-Append an item  with a callback functions:
+Append an item with a callback function:
 
 ```javascript
-// Append an async function
-queue.append('task one', async (name) => {
+queue.append('task', (name) => {
   console.log(`${name} complete`);
 });
 ```
@@ -25,48 +21,64 @@ queue.append('task one', async (name) => {
 `append` returns a deferred promise that resolves the callback when the queued item is run. The item is passed to the callback as the first parameter.
 
 ```javascript
-// Append a promise-returning function
 queue
-  .append('task two', (name) => {
-    return Promise.resolve(`${name} complete`);
-  })
+  .append('task', (name) => `${name} complete`)
   .then((message) => console.log(message));
 ```
 
-Items can be any primitive type or object:
+Callbacks can be functions, async functions, or promise-returning functions.
+
+Items can be anything; primitive types, objects, instances, etc.
 
 ```javascript
-queue.append({wait: 1000}, async (item) => {
-  await new Promise((resolve) => setTimeout(resolve, item.wait));
-  console.log('task three complete');
+queue.append({wait: 1000}, async ({wait}) => {
+  await new Promise((resolve) => setTimeout(resolve, wait));
+  console.log(`waited ${wait}ms`);
 });
 ```
 
-Callback errors can be handled:
+Other feature examples:
+
+* [Handle errors](/examples/errors.ts)
+* [Sort queued items](/examples/sort.ts)
+* [Throttle / rate-limit](/examples/throttle.ts)
+
+See the `examples` directory for full usage.
+
+## Options
+
+The `Queue` constructor accepts an options object. Options can also be changed with the instance setter methods.
 
 ```javascript
-queue
-  .append('catch', async () => {
-    throw new Error('catch errored!');
-  })
-  .catch((err) => console.error(err.message));
+const queue = new Queue({ concurrency: 5 });
+queue.concurrency = 10;
 ```
 
-Or:
+### concurrency
 
-```javascript
-const deferred = queue.append('try/catch', async () => {
-  throw new Error('try/catch errored!');
-});
-try {
-  await deferred;
-} catch (err) {
-  console.error(err.message);
-}
+Maximum number of active items running at once (default: 1).
 
-```
+### throttle
 
-See `examples` for full usage.
+Minimum number of milliseconds between start of each item (default: 0).
+
+## API
+
+### append(item, callback)
+
+Add an item and callback to the end of the queue.
+
+### prepend(item, callback)
+
+Add an item and callback to the start of the queue.
+
+### has(item)
+
+Returns true if item is queued (active or waiting).
+
+### get(item)
+
+Returns the deferred promise for the item.
 
 ## Notes
 
