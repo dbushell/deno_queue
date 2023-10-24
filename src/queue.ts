@@ -1,8 +1,6 @@
-import {
-  delay as asyncDelay,
-  deferred as asyncDeferred
-} from 'https://deno.land/std@0.204.0/async/mod.ts';
-import type {QueueCallback, QueueItem, QueueOptions} from './types.ts';
+import {delay as asyncDelay} from 'https://deno.land/std@0.204.0/async/delay.ts';
+import {deferred as asyncDeferred} from 'https://deno.land/std@0.204.0/async/deferred.ts';
+import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';
 
 export class QueueError extends Error {
   constructor(message: string) {
@@ -11,7 +9,7 @@ export class QueueError extends Error {
   }
 }
 
-export class Queue<T, R> {
+export class Queue<T, R> implements IQueue<T, R> {
   #concurrency!: number;
   #throttle!: number;
   #head: QueueItem<T, R> | undefined;
@@ -58,33 +56,18 @@ export class Queue<T, R> {
     this.#throttle = Math.max(value, 0);
   }
 
-  /** Number of active items running now */
   get pending(): number {
     return this.#runMap.size;
   }
 
-  /** Number of queued items waiting to run */
   get waiting(): number {
     return this.#size;
   }
 
-  /** Total number of active and queued items */
   get length(): number {
     return this.pending + this.waiting;
   }
 
-  /** Empty the queue of waiting items */
-  clear(): void {
-    this.#runQueue?.clear();
-    for (const node of this.#nodes()) {
-      node.deferred.reject(new QueueError('Queue cleared'));
-    }
-    this.#head = undefined;
-    this.#tail = undefined;
-    this.#size = 0;
-  }
-
-  /** Returns true if item is queued (active or waiting) */
   has(item: T): boolean {
     for (const node of this.#nodes()) {
       if (node.item === item) {
@@ -94,7 +77,6 @@ export class Queue<T, R> {
     return false;
   }
 
-  /** Returns the deferred promise for the item */
   get(item: T): Promise<R> | undefined {
     if (this.#runMap.has(item)) {
       return this.#runMap.get(item)!.deferred;
@@ -143,17 +125,14 @@ export class Queue<T, R> {
     return deferred;
   }
 
-  /** Add an item and callback to the end of the queue */
   append(item: T, callback: QueueCallback<T, R>): Promise<R> {
     return this.add(item, callback);
   }
 
-  /** Add an item and callback to the start of the queue */
   prepend(item: T, callback: QueueCallback<T, R>): Promise<R> {
     return this.add(item, callback, true);
   }
 
-  /** Prioritize the order of queued items */
   sort(compare: (a: T, b: T) => number): void {
     const nodes = Array.from(this.#nodes());
     nodes.sort((a, b) => compare(a.item, b.item));
@@ -169,6 +148,16 @@ export class Queue<T, R> {
       this.#head = node;
       this.#tail = node;
     }
+  }
+
+  clear(): void {
+    this.#runQueue?.clear();
+    for (const node of this.#nodes()) {
+      node.deferred.reject(new QueueError('Queue cleared'));
+    }
+    this.#head = undefined;
+    this.#tail = undefined;
+    this.#size = 0;
   }
 
   *#nodes(): Generator<QueueItem<T, R>> {
