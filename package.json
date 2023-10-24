@@ -3,7 +3,7 @@
   "version": "0.7.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dbushell/carriageway"
+    "url": "git+https://github.com/dbushell/carriageway.git"
   },
   "description": "Run async and promise-returning functions with limited concurrency and optional rate limiting.",
   "license": "MIT",
