@@ -5,7 +5,7 @@ const queue = new Queue<number, void>({
   throttle: 100
 });
 
-console.log('item\tms\tactive\tqueued\tthrottle');
+console.log('item\tms\tpending\twaiting\tthrottle');
 
 const promises = [];
 for (let i = 0; i < 100; i++) {
@@ -23,7 +23,7 @@ for (let i = 0; i < 100; i++) {
         `i: ${String(i).padStart(2, ' ')}\t`,
         `ms ${String(ms).padStart(3, ' ')}\t`,
         `p: ${queue.pending}\t`,
-        `q: ${queue.size}\t`,
+        `w: ${queue.waiting}\t`,
         `t: ${queue.throttle}`
       );
     })

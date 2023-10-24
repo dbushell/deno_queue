@@ -80,6 +80,10 @@ Returns true if item is queued (active or waiting).
 
 Returns the deferred promise for the item.
 
+### clear()
+
+Empty the queue of waiting items. Deferred promises are rejected with a `QueueError`. Pending items are not cleared.
+
 ## Notes
 
 Inspired by [plimit](https://github.com/sindresorhus/p-limit), [p-throttle](https://github.com/sindresorhus/p-throttle), and [p-queue](https://github.com/sindresorhus/p-queue).

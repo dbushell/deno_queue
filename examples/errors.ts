@@ -22,3 +22,12 @@ try {
 } catch (err) {
   console.error(err.message);
 }
+
+// Handle queue clear rejection
+queue.throttle = 100;
+queue.append('clear', () => queue.clear());
+queue
+  .append('rejected', () => {})
+  .catch((err) => {
+    console.error(`rejected: ${err.message}`);
+  });

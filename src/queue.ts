@@ -4,6 +4,13 @@ import {
 } from 'https://deno.land/std@0.204.0/async/mod.ts';
 import type {QueueCallback, QueueItem, QueueOptions} from './types.ts';
 
+export class QueueError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'QueueError';
+  }
+}
+
 export class Queue<T, R> {
   #concurrency!: number;
   #throttle!: number;
@@ -57,13 +64,24 @@ export class Queue<T, R> {
   }
 
   /** Number of queued items waiting to run */
-  get size(): number {
+  get waiting(): number {
     return this.#size;
   }
 
   /** Total number of active and queued items */
   get length(): number {
-    return this.pending + this.size;
+    return this.pending + this.waiting;
+  }
+
+  /** Empty the queue of waiting items */
+  clear(): void {
+    this.#runQueue?.clear();
+    for (const node of this.#nodes()) {
+      node.deferred.reject(new QueueError('Queue cleared'));
+    }
+    this.#head = undefined;
+    this.#tail = undefined;
+    this.#size = 0;
   }
 
   /** Returns true if item is queued (active or waiting) */
@@ -94,7 +112,7 @@ export class Queue<T, R> {
   }
 
   /** Return queued items */
-  getQueued(): Array<T> {
+  getWaiting(): Array<T> {
     return Array.from(this.#nodes()).map((node) => node.item);
   }
 
@@ -163,7 +181,7 @@ export class Queue<T, R> {
 
   #next(): void {
     // Queue is empty
-    if (!this.size) return;
+    if (!this.waiting) return;
     // Limit concurrent active items
     if (this.pending >= this.#concurrency) return;
     // Move item from queue to active
@@ -174,7 +192,10 @@ export class Queue<T, R> {
     // Throttle or run immediately
     const run = () => this.#run(node.item, node);
     if (this.#runQueue) {
-      this.#runQueue.append(this.#runCount++, run);
+      // Add to throttle queue and bubble up errors
+      this.#runQueue
+        .append(this.#runCount++, run)
+        .catch((err) => node.deferred.reject(err));
     } else {
       run();
     }
