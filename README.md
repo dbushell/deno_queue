@@ -1,8 +1,10 @@
-# 🦥 Deno Queue
+# 🦥 Carriageway
 
-Run async functions with limited concurrency and optional rate limiting.
+Run async and promise-returning functions with limited concurrency and optional rate limiting.
 
 ## Usage
+
+Deno imports from `mod.ts`. Other runtimes import from `index.min.js` (Bun, Node, web browsers).
 
 Create a new queue:
 
