@@ -42,18 +42,14 @@ export class Queue<T, R> implements IQueue<T, R> {
   }
 
   get throttle(): number {
-    if (this.#runQueue) {
-      return this.#runQueue.throttle;
-    }
-    return this.#throttle;
+    return this.#runQueue?.throttle ?? this.#throttle;
   }
 
   set throttle(value: number) {
-    if (this.#runQueue) {
-      this.#runQueue.throttle = value;
-      return;
-    }
-    this.#throttle = Math.max(value, 0);
+    value = Math.max(value, 0);
+    this.#runQueue
+      ? (this.#runQueue.throttle = value)
+      : (this.#throttle = value);
   }
 
   get pending(): number {
