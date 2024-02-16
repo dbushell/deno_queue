@@ -4,7 +4,7 @@ Run async and promise-returning functions with limited concurrency and optional 
 
 ## Usage
 
-Deno imports from `mod.ts`. Other runtimes import from `index.min.js` (Bun, Node, web browsers).
+Deno imports from `mod.ts`. Other runtimes import from `index.min.js` (Bun, Node, web browsers). Node requires `--js-promise-withresolvers` flag.
 
 Create a new queue:
 
@@ -92,4 +92,4 @@ Inspired by [plimit](https://github.com/sindresorhus/p-limit), [p-throttle](http
 
 * * *
 
-[MIT License](/LICENSE) | Copyright © 2023 [David Bushell](https://dbushell.com)
+[MIT License](/LICENSE) | Copyright © 2024 [David Bushell](https://dbushell.com)

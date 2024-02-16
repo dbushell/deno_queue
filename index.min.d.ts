@@ -1,11 +1,4 @@
-// https://github.com/denoland/deno_std/blob/main/async/deferred.ts
-interface Deferred<T> extends Promise<T> {
-  readonly state: 'pending' | 'fulfilled' | 'rejected';
-  resolve(value?: T | PromiseLike<T>): void;
-  reject(reason?: any): void;
-}
-
-export type QueueDeferred<R> = Deferred<R>;
+export type QueueDeferred<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
 export type QueueCallback<T, R> = (item: T) => R | Promise<R>;
 

@@ -1,6 +1,4 @@
-import type {Deferred} from 'https://deno.land/std@0.204.0/async/mod.ts';
-
-export type QueueDeferred<R> = Deferred<R>;
+export type QueueDeferred<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
 export type QueueCallback<T, R> = (item: T) => R | Promise<R>;
 

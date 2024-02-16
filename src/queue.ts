@@ -1,5 +1,4 @@
-import {delay as asyncDelay} from 'https://deno.land/std@0.204.0/async/delay.ts';
-import {deferred as asyncDeferred} from 'https://deno.land/std@0.204.0/async/deferred.ts';
+import {delay} from 'jsr:@std/async@0.216';
 import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';
 
 export class QueueError extends Error {
@@ -75,11 +74,11 @@ export class Queue<T, R> implements IQueue<T, R> {
 
   get(item: T): Promise<R> | undefined {
     if (this.#runMap.has(item)) {
-      return this.#runMap.get(item)!.deferred;
+      return this.#runMap.get(item)!.deferred.promise;
     }
     for (const node of this.#nodes()) {
       if (node.item === item) {
-        return node.deferred;
+        return node.deferred.promise;
       }
     }
   }
@@ -100,7 +99,7 @@ export class Queue<T, R> implements IQueue<T, R> {
     const queued = this.get(item);
     if (queued) return queued;
     // Queue item with a deferred promise
-    const deferred = asyncDeferred<R>();
+    const deferred = Promise.withResolvers<R>();
     const node: QueueItem<T, R> = {
       item,
       deferred,
@@ -118,7 +117,7 @@ export class Queue<T, R> implements IQueue<T, R> {
     }
     this.#size++;
     this.#next();
-    return deferred;
+    return deferred.promise;
   }
 
   append(item: T, callback: QueueCallback<T, R>): Promise<R> {
@@ -192,7 +191,7 @@ export class Queue<T, R> implements IQueue<T, R> {
     if (this.#throttle) {
       const elapsed = performance.now() - this.#runTime;
       if (elapsed < this.#throttle) {
-        await asyncDelay(this.#throttle - elapsed);
+        await delay(this.#throttle - elapsed);
       }
       this.#runTime = performance.now();
     }
