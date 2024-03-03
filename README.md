@@ -4,6 +4,8 @@ Run async and promise-returning functions with limited concurrency and optional 
 
 ## Usage
 
+Add dependency from JSR: [@dbushell/carriageway](https://jsr.io/@dbushell/carriageway)
+
 Deno imports from `mod.ts`. Other runtimes import from `index.min.js` (Bun, Node, web browsers). Node requires `--js-promise-withresolvers` flag.
 
 Create a new queue:

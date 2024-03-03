@@ -1,7 +1,14 @@
+/**
+ * @module
+ * Types for `jsr:@dbushell/carriageway`
+ */
+/** Queue item deferred promise */
 export type QueueDeferred<T> = ReturnType<typeof Promise.withResolvers<T>>;
 
+/** Queue item callback function */
 export type QueueCallback<T, R> = (item: T) => R | Promise<R>;
 
+/** Queue item (used internally) */
 export interface QueueItem<T, R> {
   item: T;
   deferred: QueueDeferred<R>;
@@ -9,6 +16,7 @@ export interface QueueItem<T, R> {
   next?: QueueItem<T, R>;
 }
 
+/** Init options for Queue class */
 export interface QueueOptions {
   /** Maximum number of active items running at once */
   concurrency?: number;
@@ -16,6 +24,7 @@ export interface QueueOptions {
   throttle?: number;
 }
 
+/** Interface for Queue class */
 export interface IQueue<T, R> {
   /** Number of active items running now */
   readonly pending: number;

@@ -1,6 +1,11 @@
+/**
+ * @module
+ * Module exports the `Queue` class and `QueueError` error
+ */
 import {delay} from 'jsr:@std/async@0.216';
 import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';
 
+/** Error thrown for rejected `Queue` items */
 export class QueueError extends Error {
   constructor(message: string) {
     super(message);
@@ -8,6 +13,7 @@ export class QueueError extends Error {
   }
 }
 
+/** Queue class */
 export class Queue<T, R> implements IQueue<T, R> {
   #concurrency!: number;
   #throttle!: number;
@@ -19,6 +25,7 @@ export class Queue<T, R> implements IQueue<T, R> {
   #runCount = 0;
   #runTime = 0;
 
+  /** Create a new Queue */
   constructor(options?: QueueOptions) {
     this.concurrency = options?.concurrency ?? 1;
     this.throttle = options?.throttle ?? 0;
