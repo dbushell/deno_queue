@@ -1,6 +1,7 @@
 /**
+ * Types for `jsr:@dbushell/carriageway`.
+ *
  * @module
- * Types for `jsr:@dbushell/carriageway`
  */
 /** Queue item deferred promise */
 export type QueueDeferred<T> = ReturnType<typeof Promise.withResolvers<T>>;

@@ -1,6 +1,7 @@
 /**
+ * Module exports the `Queue` class and `QueueError` error.
+ *
  * @module
- * Module exports the `Queue` class and `QueueError` error
  */
 import {delay} from 'jsr:@std/async@0.216';
 import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';

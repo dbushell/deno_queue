@@ -1,9 +1,13 @@
 {
   "name": "@dbushell/carriageway",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "exports": {
     ".": "./mod.ts",
     "./types": "./src/types.ts"
+  },
+  "publish": {
+    "include": ["src", "deno.json", "mod.ts", "LICENSE", "README.md"],
+    "exclude": [".github", "examples", "index.min.d.ts", "index.min.js"]
   },
   "lint": {
     "include": ["src/**/*.ts", "examples/**/*.ts"]

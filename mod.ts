@@ -1,6 +1,7 @@
 /**
  * @module
- * Queue and types for `jsr:@dbushell/carriageway`
+ *
+ * Queue and types for `jsr:@dbushell/carriageway`.
  */
 export * from './src/queue.ts';
 export type {
