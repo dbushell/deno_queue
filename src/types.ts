@@ -41,6 +41,10 @@ export interface IQueue<T, R> {
   has(item: T): boolean;
   /** Returns the deferred promise for the item */
   get(item: T): Promise<R> | undefined;
+  /** Returns active items */
+  getPending(): Array<T>;
+  /** Returns queued items */
+  getWaiting(): Array<T>;
   /** Append an item to the queue */
   append(item: T, callback: QueueCallback<T, R>): Promise<R>;
   /** Prepend an item to the queue */
