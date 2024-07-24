@@ -1,6 +1,6 @@
 {
   "name": "@dbushell/carriageway",
-  "version": "0.12.0",
+  "version": "1.0.0",
   "exports": {
     ".": "./mod.ts",
     "./types": "./src/types.ts"
