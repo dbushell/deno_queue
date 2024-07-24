@@ -3,16 +3,9 @@
  *
  * @module
  */
-import {delay} from 'jsr:@std/async@0.219';
+import {delay} from 'jsr:@std/async@1.0.0';
 import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';
-
-/** Error thrown for rejected `Queue` items */
-export class QueueError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'QueueError';
-  }
-}
+import {QueueError} from './error.ts';
 
 /** Queue class */
 export class Queue<T, R> implements IQueue<T, R> {
@@ -91,17 +84,14 @@ export class Queue<T, R> implements IQueue<T, R> {
     }
   }
 
-  /** Return active items */
   getPending(): Array<T> {
     return Array.from(this.#runMap.keys());
   }
 
-  /** Return queued items */
   getWaiting(): Array<T> {
     return Array.from(this.#nodes()).map((node) => node.item);
   }
 
-  /** Add an item to the queue */
   add(item: T, callback: QueueCallback<T, R>, prepend = false): Promise<R> {
     // Return existing deferred promise
     const queued = this.get(item);
@@ -134,6 +124,24 @@ export class Queue<T, R> implements IQueue<T, R> {
 
   prepend(item: T, callback: QueueCallback<T, R>): Promise<R> {
     return this.add(item, callback, true);
+  }
+
+  cancel(item: T): boolean {
+    let prev: QueueItem<T, R> | undefined;
+    for (const node of this.#nodes()) {
+      if (node.item === item) {
+        if (node === this.#head) {
+          this.#head = node.next;
+        } else if (prev) {
+          prev.next = node.next;
+        }
+        this.#size--;
+        node.deferred.reject(new QueueError('Item cancelled'));
+        return true;
+      }
+      prev = node;
+    }
+    return false;
   }
 
   sort(compare: (a: T, b: T) => number): void {

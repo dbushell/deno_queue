@@ -12,9 +12,9 @@ const wait = async (name: string) => {
 };
 
 const all = Promise.all([
-  queue.add('One', wait),
-  queue.add('Four', wait),
-  queue.add('Five', wait),
+  queue.append('One', wait),
+  queue.append('Four', wait),
+  queue.append('Five', wait),
   queue.prepend('Three', wait),
   queue.prepend('Two', wait)
 ]);

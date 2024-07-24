@@ -18,7 +18,7 @@ const wait = async (n: number) => {
 
 const promises = [];
 for (let i = 0; i < 10; i++) {
-  promises.push(queue.add(i, wait));
+  promises.push(queue.append(i, wait));
 }
 
 const start = Date.now();

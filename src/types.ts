@@ -37,7 +37,7 @@ export interface IQueue<T, R> {
   concurrency: number;
   /** Minimum number of milliseconds between start of each item */
   throttle: number;
-  /** Returns true if item is queued (active or waiting) */
+  /** Returns true if item is in the waiting queue */
   has(item: T): boolean;
   /** Returns the deferred promise for the item */
   get(item: T): Promise<R> | undefined;
@@ -49,6 +49,8 @@ export interface IQueue<T, R> {
   append(item: T, callback: QueueCallback<T, R>): Promise<R>;
   /** Prepend an item to the queue */
   prepend(item: T, callback: QueueCallback<T, R>): Promise<R>;
+  /** Returns true if item was removed from the waiting queue */
+  cancel(item: T): boolean;
   /** Prioritize the order of queued items */
   sort(compare: (a: T, b: T) => number): void;
   /** Clear the queue */

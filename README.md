@@ -78,11 +78,15 @@ Add an item and callback to the start of the queue.
 
 ### has(item)
 
-Returns true if item is queued (active or waiting).
+Returns true if item is in the waiting queue.
 
 ### get(item)
 
 Returns the deferred promise for the item.
+
+### cancel(item)
+
+Returns true if item was removed from the waiting queue.
 
 ### clear()
 
