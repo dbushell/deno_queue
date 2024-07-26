@@ -2,11 +2,9 @@
 
 Run async and promise-returning functions with limited concurrency and optional rate limiting.
 
+[![JSR](https://jsr.io/badges/@dbushell/carriageway?labelColor=98e6c8)](https://jsr.io/@dbushell/carriageway) [![JSR Score](https://jsr.io/badges/@dbushell/carriageway/score?labelColor=98e6c8)](https://jsr.io/@dbushell/carriageway) [![JSR](https://jsr.io/badges/@dbushell?labelColor=98e6c8)](https://jsr.io/@dbushell)
+
 ## Usage
-
-Add dependency from JSR: [@dbushell/carriageway](https://jsr.io/@dbushell/carriageway)
-
-Deno imports from `mod.ts`. Other runtimes import from `index.min.js` (Bun, Node, web browsers). Node requires `--js-promise-withresolvers` flag.
 
 Create a new queue:
 
@@ -93,6 +91,8 @@ Returns true if item was removed from the waiting queue.
 Empty the queue of waiting items. Deferred promises are rejected with a `QueueError`. Pending items are not cleared.
 
 ## Notes
+
+Node may need the `--js-promise-withresolvers` flag.
 
 Inspired by [plimit](https://github.com/sindresorhus/p-limit), [p-throttle](https://github.com/sindresorhus/p-throttle), and [p-queue](https://github.com/sindresorhus/p-queue).
 
