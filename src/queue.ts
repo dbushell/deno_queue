@@ -3,7 +3,7 @@
  *
  * @module
  */
-import {delay} from 'jsr:@std/async@1.0.0';
+import {delay} from '@std/async';
 import type {QueueCallback, QueueItem, QueueOptions, IQueue} from './types.ts';
 import {QueueError} from './error.ts';
 

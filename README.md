@@ -2,7 +2,7 @@
 
 Run async and promise-returning functions with limited concurrency and optional rate limiting.
 
-[![JSR](https://jsr.io/badges/@dbushell/carriageway?labelColor=98e6c8)](https://jsr.io/@dbushell/carriageway) [![JSR Score](https://jsr.io/badges/@dbushell/carriageway/score?labelColor=98e6c8)](https://jsr.io/@dbushell/carriageway) [![JSR](https://jsr.io/badges/@dbushell?labelColor=98e6c8)](https://jsr.io/@dbushell)
+[![JSR](https://jsr.io/badges/@dbushell/carriageway?labelColor=98e6c8&color=333)](https://jsr.io/@dbushell/carriageway) [![NPM](https://img.shields.io/npm/v/@dbushell/carriageway?labelColor=98e6c8&color=333)](https://www.npmjs.com/package/@dbushell/carriageway)
 
 ## Usage
 

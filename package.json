@@ -1,17 +1,30 @@
 {
-  "name": "carriageway",
-  "version": "1.0.1",
+  "name": "@dbushell/carriageway",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dbushell/carriageway.git"
   },
   "description": "Run async and promise-returning functions with limited concurrency and optional rate limiting.",
+  "keywords": [
+    "typescript"
+  ],
   "license": "MIT",
   "type": "module",
-  "main": "index.min.js",
-  "types": "index.min.d.ts",
+  "exports": {
+    ".": "./mod.ts",
+    "./types": "./src/types.ts"
+  },
+  "types": "src/types.ts",
   "files": [
-    "index.min.js",
-    "index.min.d.ts"
-  ]
+    "src",
+    "mod.ts",
+    ".npmrc",
+    "package.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "dependencies": {
+    "@std/async": "npm:@jsr/std__async@^1.0.4"
+  }
 }
